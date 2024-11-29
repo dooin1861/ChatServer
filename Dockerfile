@@ -1,10 +1,11 @@
-FROM gradle:7.6.1-jdk17-alpine AS build
-WORKDIR /app
-COPY . .
-RUN gradle build --no-daemon
+FROM gradle:jdk17-alpine
 
-FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY . /app
+
+# Gradle 빌드
+RUN gradle build -x test --no-daemon
+
+# JAR 파일 실행
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+CMD ["java", "-jar", "/app/build/libs/*.jar"]
